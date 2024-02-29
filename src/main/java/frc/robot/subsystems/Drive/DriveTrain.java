@@ -145,6 +145,7 @@ public class DriveTrain extends SubsystemBase {
     @Override
     public void periodic() {
         super.periodic();
+        
         double time = Timer.getFPGATimestamp();
         if (Config.AutonomousConstants.useLLForPoseEstimation) {
             try {
@@ -216,6 +217,7 @@ public class DriveTrain extends SubsystemBase {
         SmartDashboard.putNumber("Rotation", currentEstimatedPose.getRotation().getDegrees());
         SmartDashboard.putNumber("Tilt", currentTilt);
         SmartDashboard.putNumber("Delta Tilt", deltaTilt);
+        SmartDashboard.putNumber("Front Left Wheel Angle", frontLeftModule.getIntegratedPosition());
         if (isRedAlliance) {
             kField2d.setRobotPose(new Pose2d(Config.DimensionalConstants.fieldLength - currentEstimatedPose.getX(), Config.DimensionalConstants.fieldHeight - currentEstimatedPose.getY(), currentEstimatedPose.getRotation().rotateBy(Rotation2d.fromDegrees(180))));
         }
