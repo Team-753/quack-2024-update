@@ -57,7 +57,7 @@ public class SwerveModule {
         driveMotor.getConfigurator().apply(driveMotorConfig, 50);
 
         driveMotor.setPosition(0, 50);
-        turnMotor.setPosition(getAbsolutePosition() * 2048 * Config.DriveConstants.turningGearRatio / 360, 50);
+        turnMotor.setPosition(getAbsolutePosition() * Config.DriveConstants.turningGearRatio / 360, 50);
 
         staticFrictionFFController = new SimpleMotorFeedforward(Config.DriveConstants.swerveDriveFFkS, Config.DriveConstants.swerveDriveFFkV, Config.DriveConstants.swerveDriveFFkA);
 
@@ -71,11 +71,11 @@ public class SwerveModule {
         return analogEncoder.getAbsolutePosition() * 360;
     }
     public double getIntegratedPosition() {
-        return ((turnMotor.getPosition().getValueAsDouble() % (2048 * Config.DriveConstants.turningGearRatio)) * 360) / (2048 * Config.DriveConstants.turningGearRatio);
+        return ((turnMotor.getPosition().getValueAsDouble() % (Config.DriveConstants.turningGearRatio)) * 360) / (Config.DriveConstants.turningGearRatio);
     }
 
     private Rotation2d getIntegratedState() {
-        return Rotation2d.fromDegrees(((turnMotor.getPosition().getValueAsDouble() % (2048 * Config.DriveConstants.turningGearRatio)) * 360) / (2048 * Config.DriveConstants.turningGearRatio));
+        return Rotation2d.fromDegrees(((turnMotor.getPosition().getValueAsDouble() % (Config.DriveConstants.turningGearRatio)) * 360) / (Config.DriveConstants.turningGearRatio));
     }
 
     public void setState(SwerveModuleState state) {
@@ -85,7 +85,7 @@ public class SwerveModule {
             driveMotor.set(0);
         }
         else {
-            velocity = (velocity + staticFrictionFFController.calculate(velocity)) * Config.DriveConstants.drivingGearRatio * 2048 / (Config.DriveConstants.wheelDiameter * Math.PI * 10); // converting from m/s to ticks / 100ms
+            velocity = (velocity + staticFrictionFFController.calculate(velocity)) * Config.DriveConstants.drivingGearRatio / (Config.DriveConstants.wheelDiameter * Math.PI * 10); // converting from m/s to ticks / 100ms
             driveMotor.setControl(m_request_velocity.withVelocity(velocity));
         }
         double angleDegrees = desiredState.angle.getDegrees();
@@ -93,7 +93,7 @@ public class SwerveModule {
             angleDegrees += 360;
         }
         double turnPositionTicks = turnMotor.getPosition().getValueAsDouble();
-        turnMotor.setControl(m_request_position.withPosition((turnPositionTicks - (turnPositionTicks % (2048 * Config.DriveConstants.turningGearRatio))) + (angleDegrees * 2048 * Config.DriveConstants.turningGearRatio / 360)));
+        turnMotor.setControl(m_request_position.withPosition((turnPositionTicks - (turnPositionTicks % (Config.DriveConstants.turningGearRatio))) + (angleDegrees * Config.DriveConstants.turningGearRatio / 360)));
     }
 
     public void Coast() {
@@ -119,13 +119,13 @@ public class SwerveModule {
     }
 
     public SwerveModulePosition getSwerveModulePosition() {
-        double distanceMeters = driveMotor.getPosition().getValueAsDouble() * Config.DriveConstants.wheelDiameter * Math.PI / (2048 * Config.DriveConstants.drivingGearRatio);
+        double distanceMeters = driveMotor.getPosition().getValueAsDouble() * Config.DriveConstants.wheelDiameter * Math.PI / (Config.DriveConstants.drivingGearRatio);
         Rotation2d angle = getIntegratedState();
         return new SwerveModulePosition(distanceMeters, angle);
     }
 
     public SwerveModuleState getSwerveModuleState() {
-        double velocity = (driveMotor.getVelocity().getValueAsDouble() * 10 * Config.DriveConstants.wheelDiameter * Math.PI) / (2048 * Config.DriveConstants.drivingGearRatio);
+        double velocity = (driveMotor.getVelocity().getValueAsDouble() * 10 * Config.DriveConstants.wheelDiameter * Math.PI) / (Config.DriveConstants.drivingGearRatio);
         Rotation2d angle = getIntegratedState();
         return new SwerveModuleState(velocity, angle);
     }
