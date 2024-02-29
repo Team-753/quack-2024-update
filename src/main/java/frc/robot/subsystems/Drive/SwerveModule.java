@@ -50,7 +50,7 @@ public class SwerveModule {
         driveMotorConfig.Slot0.kP = 0.0005;
         driveMotorConfig.Slot0.kI = 0.0005;
         driveMotorConfig.Slot0.kD = 0.0000;
-        driveMotorConfig.Slot0.kV = 0.046;
+        driveMotorConfig.Slot0.kV = 0.5;//0.046;
         //driveMotorConfig.Slot0.integralZone = 500;
         //driveMotorConfig.Slot0.allowableClosedloopError = 0;
         driveMotorConfig.CurrentLimits.SupplyCurrentLimit = 37.5;
