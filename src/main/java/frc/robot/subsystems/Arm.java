@@ -52,7 +52,7 @@ public class Arm extends SubsystemBase {
         else {
             armFalcon = new TalonFX(Config.ArmConstants.armID);
             TalonFXConfiguration armFalconConfig = new TalonFXConfiguration();
-            armFalconConfig.Slot0.kP = 0.1;
+            armFalconConfig.Slot0.kP = 1;
             armFalconConfig.Slot0.kI = 0.0001;
             armFalconConfig.Slot0.kD = 0.0001;
             armFalconConfig.Slot0.kG = 0.0;
