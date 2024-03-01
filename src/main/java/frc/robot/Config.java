@@ -107,9 +107,9 @@ public class Config {
         }
     }
     public static class DEBUGGING {
-        public static boolean useDebugTab = false;
+        public static boolean useDebugTab = true;
         public static boolean reportSwervePositions = false;
-        public static boolean reportChassisSpeeds = false;
+        public static boolean reportChassisSpeeds = true;
         public static boolean bypassAutoChecks = false; // VERY DANGEROUS TO LEAVE TRUE
         public static boolean ppSpeedDebug = false;
         public static boolean bypassAutoTurnTo = true;
