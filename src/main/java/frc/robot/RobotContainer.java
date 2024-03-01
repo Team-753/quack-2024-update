@@ -139,24 +139,24 @@ public class RobotContainer {
     // Trigger joystickTen = joystick.button(10);
     // joystickTen.whileTrue(new DriveInDirectionCommand(driveTrain, 1, 0, 0, false));
 
-    Trigger joystickNine = joystick.button(9);
-    joystickNine.whileTrue(new SequentialCommandGroup(
-      // new SetArmPositionCommand(arm, "FloorPickupPrep"), // getting the arm into position
-      //new TurnToPieceCommand(driveTrain), // turning to the expected angle of the game piece
-      new LockOnPieceCommand(driveTrain, mandible), // doing the final correction using the limelight google coral pipeline
-      new ArmConfirmPositionCommand(arm, "Floor"), // moving the arm into pickup position
-      new DriveUntilOnPieceCommand(driveTrain, mandible),
-      new SetArmPositionCommand(arm, "Optimized")));
+    // Trigger joystickNine = joystick.button(9);
+    // joystickNine.whileTrue(new SequentialCommandGroup(
+    //   // new SetArmPositionCommand(arm, "FloorPickupPrep"), // getting the arm into position
+    //   //new TurnToPieceCommand(driveTrain), // turning to the expected angle of the game piece
+    //   new LockOnPieceCommand(driveTrain, mandible), // doing the final correction using the limelight google coral pipeline
+    //   new ArmConfirmPositionCommand(arm, "Floor"), // moving the arm into pickup position
+    //   new DriveUntilOnPieceCommand(driveTrain, mandible),
+    //   new SetArmPositionCommand(arm, "Optimized")));
 
-    Trigger joystickTwo = joystick.button(2);
-    joystickTwo.whileTrue(new SequentialCommandGroup(
-      new CalculateArmPositionCommand(arm, streamDeck, false),
-      new MoveToPlacementCommand(driveTrain, streamDeck),
-      new DriverConfirmCommand(joystick, driveTrain, mandible),
-      new CalculateArmPositionCommand(arm, streamDeck, true),
-      new MandiblePlacementCommand(mandible),
-      new SetArmPositionCommand(arm, "Optimized")
-    ));
+    // Trigger joystickTwo = joystick.button(2);
+    // joystickTwo.whileTrue(new SequentialCommandGroup(
+    //   new CalculateArmPositionCommand(arm, streamDeck, false),
+    //   new MoveToPlacementCommand(driveTrain, streamDeck),
+    //   new DriverConfirmCommand(joystick, driveTrain, mandible),
+    //   new CalculateArmPositionCommand(arm, streamDeck, true),
+    //   new MandiblePlacementCommand(mandible),
+    //   new SetArmPositionCommand(arm, "Optimized")
+    // ));
 
     Trigger joystickThree = joystick.button(3);
     joystickThree.whileTrue(new SubstationPickupCommand(driveTrain, joystick));
@@ -185,42 +185,43 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     //arm.startArmMovement(); // could be bad
-    mandible.setOpen(true);
-    mandible.passiveIntake();
-    SmartDashboard.putBoolean("Autonomous Finished", false);
-    String autoName = autoChooser.getSelected();
-    Command command;
-    switch (autoName) {
-      case "Place Cube":
-        command = eventMap.get("Place Cube");
-        break;
-      case "Place & Charge":
-        // command = new SequentialCommandGroup(
-        //   eventMap.get("Place Cube"),
-        //   new ArmConfirmPositionCommand(arm, "FullyRetracted"),
-        //   new ConsistentChargeStationAuto(driveTrain, arm, false),
-        //   new SetArmPositionCommand(arm, "Optimized"),
-        //   new WaitCommand(0.75),
-        //   new ConsistentChargeStationAuto(driveTrain, arm, true),
-        //   new SetArmPositionCommand(arm, "Substation")
-        // );
-        command = new SequentialCommandGroup(
-          eventMap.get("Place Cube"),
-          // new FastChargeStationAutoCommand(driveTrain, arm)
-          new SetArmPositionCommand(arm, "FullyRetracted"),
-          new TurnToCommand(driveTrain, Rotation2d.fromRadians(3.0 * Math.PI / 4.0)),
-          new ConsistentChargeStationAuto(driveTrain, arm, false, false),
-          new WaitCommand(0.65),
-          new TurnToCommand(driveTrain, Rotation2d.fromRadians(Math.PI)),
-          new ConsistentChargeStationAuto(driveTrain, arm, true, false),
-          new SetArmPositionCommand(arm, "Substation")
-        );
-        break;
-      default:
-        //command = swerveAutoBuilder.fullAuto(PathPlannerAuto.loadPathGroup(autoName, autoPathConstraints));
-        command = null;
-    }
-    return new SequentialCommandGroup(command, Commands.runOnce(() -> SmartDashboard.putBoolean("Autonomous Finished", true)));
+    // mandible.setOpen(true);
+    // mandible.passiveIntake();
+    // SmartDashboard.putBoolean("Autonomous Finished", false);
+    // String autoName = autoChooser.getSelected();
+    // Command command;
+    // switch (autoName) {
+    //   case "Place Cube":
+    //     command = eventMap.get("Place Cube");
+    //     break;
+    //   case "Place & Charge":
+    //     // command = new SequentialCommandGroup(
+    //     //   eventMap.get("Place Cube"),
+    //     //   new ArmConfirmPositionCommand(arm, "FullyRetracted"),
+    //     //   new ConsistentChargeStationAuto(driveTrain, arm, false),
+    //     //   new SetArmPositionCommand(arm, "Optimized"),
+    //     //   new WaitCommand(0.75),
+    //     //   new ConsistentChargeStationAuto(driveTrain, arm, true),
+    //     //   new SetArmPositionCommand(arm, "Substation")
+    //     // );
+    //     command = new SequentialCommandGroup(
+    //       eventMap.get("Place Cube"),
+    //       // new FastChargeStationAutoCommand(driveTrain, arm)
+    //       new SetArmPositionCommand(arm, "FullyRetracted"),
+    //       new TurnToCommand(driveTrain, Rotation2d.fromRadians(3.0 * Math.PI / 4.0)),
+    //       new ConsistentChargeStationAuto(driveTrain, arm, false, false),
+    //       new WaitCommand(0.65),
+    //       new TurnToCommand(driveTrain, Rotation2d.fromRadians(Math.PI)),
+    //       new ConsistentChargeStationAuto(driveTrain, arm, true, false),
+    //       new SetArmPositionCommand(arm, "Substation")
+    //     );
+    //     break;
+    //   default:
+    //     //command = swerveAutoBuilder.fullAuto(PathPlannerAuto.loadPathGroup(autoName, autoPathConstraints));
+    //     command = null;
+    // }
+    // return new SequentialCommandGroup(command, Commands.runOnce(() -> SmartDashboard.putBoolean("Autonomous Finished", true)));
+    return null;
   }
 
   public void generateEventMap() {

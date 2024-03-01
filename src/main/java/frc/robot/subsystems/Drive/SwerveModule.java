@@ -37,7 +37,7 @@ public class SwerveModule {
         xAngle = swerveModuleConfig.xAngle;
 
         TalonFXConfiguration turnMotorConfig = new TalonFXConfiguration();
-        turnMotorConfig.Slot0.kP = 0.15; //0.1
+        turnMotorConfig.Slot0.kP = 1; //0.1
         turnMotorConfig.Slot0.kI = 0.01;
         turnMotorConfig.Slot0.kD = 0.0001;
         turnMotorConfig.Slot0.kV = 0;

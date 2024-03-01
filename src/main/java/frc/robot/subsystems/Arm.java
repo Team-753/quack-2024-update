@@ -1,12 +1,9 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -22,7 +19,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 public class Arm extends SubsystemBase {
     private double targetValue = 0.0;
     private double maxHeightInches = 42.5;
-    private double falconEncoderTicksToDistanceConversionFactor = 1.0 / (2.0 * 4.0 * 2048.0);
+    private double falconEncoderTicksToDistanceConversionFactor = 1.0 / (2.0 * 4.0);
     private double neoEncoderTicksToDistanceConversionFactor = 1.0 / (2.0 * 4.0);
     private boolean zeroed;
     private DigitalInput limitSwitch;
@@ -31,6 +28,7 @@ public class Arm extends SubsystemBase {
     private RelativeEncoder neoEncoder;
     //private SparkMaxPIDController neoPID;
     private ProfiledPIDController pidController;
+    private final PositionVoltage m_request_position = new PositionVoltage(0).withSlot(0);
 
     public Arm() {
         limitSwitch = new DigitalInput(Config.ArmConstants.limitSwitchID);
@@ -54,19 +52,16 @@ public class Arm extends SubsystemBase {
         else {
             armFalcon = new TalonFX(Config.ArmConstants.armID);
             TalonFXConfiguration armFalconConfig = new TalonFXConfiguration();
-            armFalconConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-            armFalconConfig.slot0.kP = 0.1;
-            armFalconConfig.slot0.kI = 0.0001;
-            armFalconConfig.slot0.kD = 0.0001;
-            armFalconConfig.slot0.kF = 0.0;
-            armFalconConfig.slot0.integralZone = 100.0;
-            armFalconConfig.slot0.allowableClosedloopError = 256.0;
-            SupplyCurrentLimitConfiguration armSupplyCurrentConfig = new SupplyCurrentLimitConfiguration();
-            armSupplyCurrentConfig.currentLimit = 40.0;
-            armFalconConfig.supplyCurrLimit = armSupplyCurrentConfig;
-            armFalcon.configAllSettings(armFalconConfig, 50);
-            armFalcon.setNeutralMode(NeutralMode.Coast);
-            armFalcon.setSelectedSensorPosition(0.0, 0, 0);
+            armFalconConfig.Slot0.kP = 0.1;
+            armFalconConfig.Slot0.kI = 0.0001;
+            armFalconConfig.Slot0.kD = 0.0001;
+            armFalconConfig.Slot0.kG = 0.0;
+            //armFalconConfig.Slot0.integralZone = 100.0;
+            //armFalconConfig.Slot0.allowableClosedloopError = 256.0;
+            armFalconConfig.CurrentLimits.StatorCurrentLimit = 40;
+            armFalcon.getConfigurator().apply(armFalconConfig, 50);
+            armFalcon.setNeutralMode(NeutralModeValue.Coast);
+            armFalcon.setPosition(0, 50);
         }
 
     }
@@ -82,8 +77,8 @@ public class Arm extends SubsystemBase {
                     neoEncoder.setPosition(0.0);
                 }
                 else {
-                    armFalcon.set(TalonFXControlMode.PercentOutput, 0);
-                    armFalcon.setSelectedSensorPosition(0, 0, 50);
+                    armFalcon.set(0);
+                    armFalcon.setPosition(0, 50);
                 }
                 zeroed = true;
             }
@@ -92,7 +87,7 @@ public class Arm extends SubsystemBase {
                     armNEO.set(-0.45);
                 }
                 else {
-                    armFalcon.set(TalonFXControlMode.PercentOutput, -0.25);
+                    armFalcon.set(-0.25);
                 }
             }
         }
@@ -104,8 +99,8 @@ public class Arm extends SubsystemBase {
                 SmartDashboard.putNumber("Arm Position", neoEncoder.getPosition() * neoEncoderTicksToDistanceConversionFactor);
             }
             else {
-                armFalcon.set(TalonFXControlMode.Position, targetValue / falconEncoderTicksToDistanceConversionFactor);
-                SmartDashboard.putNumber("Arm Position", armFalcon.getSelectedSensorPosition() * falconEncoderTicksToDistanceConversionFactor);
+                armFalcon.setControl(m_request_position.withPosition(targetValue / falconEncoderTicksToDistanceConversionFactor));
+                SmartDashboard.putNumber("Arm Position", armFalcon.getPosition().getValueAsDouble() * falconEncoderTicksToDistanceConversionFactor);
             }
         }
     }
@@ -125,7 +120,7 @@ public class Arm extends SubsystemBase {
             }
         }
         else {
-            if (Math.abs(targetValue - (armFalcon.getSelectedSensorPosition() * falconEncoderTicksToDistanceConversionFactor)) < Config.ArmConstants.autoPlacementTolerance) {
+            if (Math.abs(targetValue - (armFalcon.getPosition().getValueAsDouble() * falconEncoderTicksToDistanceConversionFactor)) < Config.ArmConstants.autoPlacementTolerance) {
                 return true;
             }
             else {
@@ -156,7 +151,7 @@ public class Arm extends SubsystemBase {
             armNEO.set(1);
         }
         else {
-            armFalcon.set(ControlMode.PercentOutput, 1);
+            armFalcon.set(1);
         }
     }
 }
